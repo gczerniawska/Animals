@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.websocket.server.PathParam;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,54 +17,75 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.qa.animals.domain.Animals;
+import com.qa.animals.service.AnimalsServiceList;
 
 // All CRUD commands go in here
 
 @RestController // will be mapping the requests to metods
 public class AnimalsController {
 	
-	// Java can't read a table so you will use an Array to represent that until you connect do a db.
-	// it will take all of the post requests
+	// we need to make this class dependent on service class
+	private AnimalsServiceList service; // CDI - context & dependency injection
 	
-	private List<Animals> animals = new ArrayList<>();
-	
+	public AnimalsController(AnimalsServiceList service) {
+		super();
+		this.service = service;
+	}
+
 	//CREATE
 	// -- it's a post request so we need post mapping request
 	@PostMapping("/create")
 	public ResponseEntity<Animals> createAnimal(@RequestBody Animals a) {
-		a.setId((long) this.animals.indexOf(a)); // -- update ID variable with an array index
-		this.animals.add(a);
-		Animals created = this.animals.get(this.animals.size()-1); // -- returns a postman record of what's been created
-		return new ResponseEntity<Animals>(created, HttpStatus.CREATED); //adds a custom response code to postman status line
+		return new ResponseEntity<Animals>(this.service.create(a), HttpStatus.CREATED); //adds a custom response code to postman 
 	
 	}
 	
-	//READ
+//	//READ
+//	@GetMapping("/readAll")
+//	public List<Animals> readAnimal() {
+//		return this.service.read();
+//	}
+	
 	@GetMapping("/readAll")
-	public List<Animals> readAnimal() {
-		return this.animals;
+	public ResponseEntity<List<Animals>> readAnimal() {
+//		List<Animals> read = (List<Animals>) this.service.read();
+		return new ResponseEntity<List<Animals>>(this.service.read(), HttpStatus.ACCEPTED);
 	}
+	
 	
 	//READ by ID
 	@GetMapping("/readById/{id}")
-	public Animals getById(@PathVariable int id) {
-		return this.animals.get(id);
+	public ResponseEntity<Animals> getById(@PathVariable int id) {
+		return new ResponseEntity<Animals>(this.service.readOne(id), HttpStatus.FOUND);
 	}
+
 	
 	//UPDATE (pass an id, find a record at that id, replace with new information, aside from passing the body
 				// we also need to pass the id)
 	
+//	@PutMapping("/update/{id}")
+//	public Animals update(@PathVariable int id, @RequestBody Animals updated) {
+//		return this.service.update(id, updated);
+//	}
+	
 	@PutMapping("/update/{id}")
-	public Animals update(@PathVariable int id, @RequestBody Animals updated) {
-		this.animals.set(id, updated);
-		return this.animals.get(id);
+	public ResponseEntity<Animals> update(@PathVariable int id, @RequestBody Animals updated) {
+		return new ResponseEntity<Animals>(this.service.update(id, updated), HttpStatus.I_AM_A_TEAPOT);
 	}
+	
 	
 	//DELETE
 	@DeleteMapping("/delete")
-	public void delete(@PathParam("id") int id) {
-		this.animals.remove(id);
+	public Animals delete(@PathParam("id") int id) {
+		return this.service.delete(id);
 	}
+	
+// 	THIS DOESN'T WORK AND I DON'T KNOW WHY!!!!
+//	
+//	@PutMapping("/delete") 
+//	public ResponseEntity<Animals> delete(@PathParam("id") int id) {
+//		return new ResponseEntity<Animals>(this.service.delete(id), HttpStatus.GONE);
+//	}
 	
 
 }
