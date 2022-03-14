@@ -12,7 +12,7 @@ import com.qa.animals.domain.Animals;
 // and the service will do all the logic
 
 @Service
-public class AnimalsServiceList implements AnimalsInterface {
+public class AnimalsServiceList implements AnimalsInterface<Integer> {
 	
 	// Java can't read a table so you will use an Array to represent that until you connect do a db.
 		// it will take all of the post requests
@@ -32,20 +32,20 @@ public class AnimalsServiceList implements AnimalsInterface {
 		return this.animals;
 	}
 	
-	public Animals readOne(int id) {
+	public Animals readOne(Integer id) {
 		return this.animals.get(id);
 	}
 
 	@Override
-	public Animals update(int id, Animals y) {
+	public Animals update(Integer id, Animals y) {
 		this.animals.set(id, y);
 		return this.animals.get(id); 
 	
 	}
 
 	@Override
-	public Animals delete(int id) {
-		return this.animals.remove(id);
+	public Animals delete(Integer id) {
+		return this.animals.remove((int)id);
 	}
 
 }

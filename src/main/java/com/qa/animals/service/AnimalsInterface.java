@@ -7,7 +7,7 @@ import com.qa.animals.domain.Animals;
 // creating this interface so later on when you connect to a db you don't have to change the code in your class
 // you can just create a new class and inherit from this interface
 
-public interface AnimalsInterface {
+public interface AnimalsInterface<T> {
 // service class will carry out the same methods CRUD methods as before so you will need these abstract methods
 // for each of the CRUD 
 
@@ -15,8 +15,8 @@ public interface AnimalsInterface {
 	
 	List<Animals> read();
 	
-	Animals update(int id, Animals y);
+	Animals update(T id, Animals y);
 	
-	Animals delete(int id);
+	Animals delete(T id);
 
 }

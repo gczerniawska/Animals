@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.qa.animals.domain.Animals;
+import com.qa.animals.service.AnimalsServiceDB;
 import com.qa.animals.service.AnimalsServiceList;
 
 // All CRUD commands go in here
@@ -25,9 +26,14 @@ import com.qa.animals.service.AnimalsServiceList;
 public class AnimalsController {
 	
 	// we need to make this class dependent on service class
-	private AnimalsServiceList service; // CDI - context & dependency injection
+//	private AnimalsServiceList service; // CDI - context & dependency injection
+	//when making your project you don't need to make AnimalServiceList
+	// you go straight to building DB so
+	//after creating animal service DB we're changing above to
 	
-	public AnimalsController(AnimalsServiceList service) {
+	private AnimalsServiceDB service; //CDI - context & dependency injection
+	
+	public AnimalsController(AnimalsServiceDB service) {
 		super();
 		this.service = service;
 	}
@@ -52,13 +58,11 @@ public class AnimalsController {
 		return new ResponseEntity<List<Animals>>(this.service.read(), HttpStatus.ACCEPTED);
 	}
 	
-	
 	//READ by ID
 	@GetMapping("/readById/{id}")
-	public ResponseEntity<Animals> getById(@PathVariable int id) {
+	public ResponseEntity<Animals> getById(@PathVariable Long id) {
 		return new ResponseEntity<Animals>(this.service.readOne(id), HttpStatus.FOUND);
 	}
-
 	
 	//UPDATE (pass an id, find a record at that id, replace with new information, aside from passing the body
 				// we also need to pass the id)
@@ -69,23 +73,26 @@ public class AnimalsController {
 //	}
 	
 	@PutMapping("/update/{id}")
-	public ResponseEntity<Animals> update(@PathVariable int id, @RequestBody Animals updated) {
+	public ResponseEntity<Animals> update(@PathVariable Long id, @RequestBody Animals updated) {
 		return new ResponseEntity<Animals>(this.service.update(id, updated), HttpStatus.I_AM_A_TEAPOT);
 	}
 	
 	
 	//DELETE
 	@DeleteMapping("/delete")
-	public Animals delete(@PathParam("id") int id) {
+	public Animals delete(@PathParam("id") Long id) {
 		return this.service.delete(id);
 	}
 	
 // 	THIS DOESN'T WORK AND I DON'T KNOW WHY!!!!
 //	
 //	@PutMapping("/delete") 
-//	public ResponseEntity<Animals> delete(@PathParam("id") int id) {
+//	public ResponseEntity<Animals> delete(@PathParam("id") Long id) {
 //		return new ResponseEntity<Animals>(this.service.delete(id), HttpStatus.GONE);
 //	}
 	
-
+	@DeleteMapping("/remove")
+	public boolean remove(@PathParam("id") Long id) {
+		return this.service.remove(id);
+	}
 }
